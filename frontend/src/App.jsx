@@ -6,7 +6,7 @@ import { ShoppingBag, Search, Menu, X, Sun, Moon, Phone, Mail, MessageCircle } f
 import HeroCarousel from './components/HeroCarousel';
 import ShopGrid from './components/ShopGrid';
 
-function Header({ siteSettings }) {
+function Header({ siteSettings, searchQuery, setSearchQuery }) {
   const { itemCount } = useCart();
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -49,6 +49,8 @@ function Header({ siteSettings }) {
             <input 
               type="text" 
               placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-48 border-b border-gray-300 dark:border-gray-700 py-1 pl-2 pr-8 text-sm bg-transparent focus:outline-none focus:border-black dark:focus:border-white transition-colors"
             />
             <Search size={16} className="absolute right-2 top-2 text-gray-400 group-focus-within:text-black dark:group-focus-within:text-white" />
@@ -133,11 +135,11 @@ function Footer() {
   );
 }
 
-function Home() {
+function Home({ searchQuery }) {
   return (
     <main>
       <HeroCarousel />
-      <ShopGrid />
+      <ShopGrid searchQuery={searchQuery} />
     </main>
   );
 }
@@ -455,6 +457,7 @@ function ScrollToTop() {
 
 function App() {
   const [siteSettings, setSiteSettings] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/settings/')
@@ -480,10 +483,10 @@ function App() {
         <Router>
           <div className="min-h-screen flex flex-col font-sans bg-rtm-light-bg dark:bg-gray-900 transition-colors duration-300 relative">
             <ScrollToTop />
-            <Header siteSettings={siteSettings} />
+            <Header siteSettings={siteSettings} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
             <div className="flex-1">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home searchQuery={searchQuery} />} />
                 <Route path="/quote" element={<QuotePage />} />
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/contact" element={<ContactPage />} />
