@@ -359,6 +359,24 @@ function ContactPage() {
           <a href="https://tiktok.com/@Royaltimbermaker" target="_blank" rel="noopener noreferrer" className="text-lg font-medium text-gray-600 dark:text-gray-400 hover:text-rtm-teal dark:hover:text-rtm-teal transition-colors">TikTok</a>
         </div>
       </div>
+
+      <div className="w-full mt-16">
+        <h2 className="text-lg font-medium mb-4 dark:text-white uppercase tracking-wider">Visit Our Workshop</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
+          Komarock, Nairobi — Opposite Komarock Primary School
+        </p>
+        <div className="w-full h-96 rounded-sm overflow-hidden border border-gray-100 dark:border-gray-700 shadow-lg">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8369790542456!2d36.90833057472441!3d-1.2708081987170987!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1487f325f271%3A0xb6c9726afd6a49b6!2sRoyal%20Timber%20Maker!5e0!3m2!1sen!2ske!4v1778282970214!5m2!1sen!2ske" 
+            width="100%" 
+            height="100%" 
+            style={{ border: 0 }} 
+            allowFullScreen="" 
+            loading="lazy" 
+            referrerPolicy="no-referrer-when-downgrade"
+          ></iframe>
+        </div>
+      </div>
     </div>
   );
 }
