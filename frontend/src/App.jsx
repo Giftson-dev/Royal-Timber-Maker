@@ -357,6 +357,7 @@ function ContactPage() {
         <div className="flex justify-center space-x-8">
           <a href="https://instagram.com/Royaltimbermaker" target="_blank" rel="noopener noreferrer" className="text-lg font-medium text-gray-600 dark:text-gray-400 hover:text-rtm-teal dark:hover:text-rtm-teal transition-colors">Instagram</a>
           <a href="https://tiktok.com/@Royaltimbermaker" target="_blank" rel="noopener noreferrer" className="text-lg font-medium text-gray-600 dark:text-gray-400 hover:text-rtm-teal dark:hover:text-rtm-teal transition-colors">TikTok</a>
+          <a href="https://facebook.com/Royaltimbermaker" target="_blank" rel="noopener noreferrer" className="text-lg font-medium text-gray-600 dark:text-gray-400 hover:text-rtm-teal dark:hover:text-rtm-teal transition-colors">Facebook</a>
         </div>
       </div>
 
