@@ -6,7 +6,7 @@ import { ShoppingBag, Search, Menu, X, Sun, Moon, Phone, Mail, MessageCircle } f
 import HeroCarousel from './components/HeroCarousel';
 import ShopGrid from './components/ShopGrid';
 
-function Header({ siteSettings, searchQuery, setSearchQuery }) {
+function Header({ siteSettings, searchQuery, setSearchQuery, products }) {
   const { itemCount } = useCart();
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,8 +35,8 @@ function Header({ siteSettings, searchQuery, setSearchQuery }) {
         <nav className="hidden md:flex space-x-8">
           <Link to="/" className="text-sm font-medium text-black dark:text-gray-200 hover:text-rtm-coral dark:hover:text-rtm-coral transition-colors">Home</Link>
           <Link to="/#shop" className="text-sm font-medium text-black dark:text-gray-200 hover:text-rtm-coral dark:hover:text-rtm-coral transition-colors">Shop</Link>
-          <Link to="/about" className="text-sm font-medium text-black dark:text-gray-200 hover:text-rtm-coral dark:hover:text-rtm-coral transition-colors">About</Link>
-          <Link to="/contact" className="text-sm font-medium text-black dark:text-gray-200 hover:text-rtm-coral dark:hover:text-rtm-coral transition-colors">Contact</Link>
+          <Link to="/#about" className="text-sm font-medium text-black dark:text-gray-200 hover:text-rtm-coral dark:hover:text-rtm-coral transition-colors">About</Link>
+          <Link to="/#contact" className="text-sm font-medium text-black dark:text-gray-200 hover:text-rtm-coral dark:hover:text-rtm-coral transition-colors">Contact</Link>
         </nav>
 
         {/* Utilities */}
@@ -54,6 +54,46 @@ function Header({ siteSettings, searchQuery, setSearchQuery }) {
               className="w-48 border-b border-gray-300 dark:border-gray-700 py-1 pl-2 pr-8 text-sm bg-transparent focus:outline-none focus:border-black dark:focus:border-white transition-colors"
             />
             <Search size={16} className="absolute right-2 top-2 text-gray-400 group-focus-within:text-black dark:group-focus-within:text-white" />
+            
+            {/* Search Recommendations */}
+            {searchQuery && products && products.length > 0 && (
+              <div className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-xl rounded-sm overflow-hidden z-50">
+                {products
+                  .filter(p => 
+                    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (p.categorySlug && p.categorySlug.toLowerCase() === searchQuery.toLowerCase().trim())
+                  )
+                  .slice(0, 5)
+                  .map(product => (
+                    <Link 
+                      key={product.id} 
+                      to="/#shop"
+                      onClick={() => {
+                        setSearchQuery(product.title);
+                      }}
+                      className="flex items-center gap-4 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-0 transition-colors"
+                    >
+                      <img src={product.image} alt={product.title} className="w-12 h-12 object-cover bg-gray-100 dark:bg-gray-900 rounded-sm" />
+                      <div className="flex-1 overflow-hidden">
+                        <h4 className="text-sm font-medium text-black dark:text-white truncate">{product.title}</h4>
+                        <p className="text-[10px] text-rtm-coral dark:text-rtm-mustard font-bold uppercase">{product.category}</p>
+                      </div>
+                    </Link>
+                  ))}
+                  {products.filter(p => 
+                    p.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                    (p.description && p.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    (p.categorySlug && p.categorySlug.toLowerCase() === searchQuery.toLowerCase().trim())
+                  ).length === 0 && (
+                    <div className="p-4 text-sm text-center text-gray-500 dark:text-gray-400">
+                      No matching products found.
+                    </div>
+                  )}
+              </div>
+            )}
           </div>
           
           <Link to="/quote" className="relative text-black dark:text-white hover:text-rtm-teal dark:hover:text-rtm-teal transition-colors">
@@ -83,6 +123,8 @@ function Header({ siteSettings, searchQuery, setSearchQuery }) {
           <nav className="flex flex-col space-y-4">
             <Link to="/" className="text-sm font-medium dark:text-white" onClick={() => setIsMenuOpen(false)}>Home</Link>
             <Link to="/#shop" className="text-sm font-medium dark:text-white" onClick={() => setIsMenuOpen(false)}>Shop</Link>
+            <Link to="/#about" className="text-sm font-medium dark:text-white" onClick={() => setIsMenuOpen(false)}>About</Link>
+            <Link to="/#contact" className="text-sm font-medium dark:text-white" onClick={() => setIsMenuOpen(false)}>Contact</Link>
             <Link to="/quote" className="text-sm font-medium dark:text-white flex justify-between" onClick={() => setIsMenuOpen(false)}>
               Quote Cart <span className="bg-rtm-coral text-white text-xs px-2 py-1 rounded-full">{itemCount}</span>
             </Link>
@@ -112,8 +154,8 @@ function Footer() {
           <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <li><Link to="/" className="hover:text-rtm-coral dark:hover:text-rtm-mustard transition-colors">Home</Link></li>
             <li><Link to="/#shop" className="hover:text-rtm-coral dark:hover:text-rtm-mustard transition-colors">Shop</Link></li>
-            <li><Link to="/about" className="hover:text-rtm-coral dark:hover:text-rtm-mustard transition-colors">About Us</Link></li>
-            <li><Link to="/contact" className="hover:text-rtm-coral dark:hover:text-rtm-mustard transition-colors">Contact</Link></li>
+            <li><Link to="/#about" className="hover:text-rtm-coral dark:hover:text-rtm-mustard transition-colors">About Us</Link></li>
+            <li><Link to="/#contact" className="hover:text-rtm-coral dark:hover:text-rtm-mustard transition-colors">Contact</Link></li>
           </ul>
         </div>
         <div>
@@ -135,11 +177,19 @@ function Footer() {
   );
 }
 
-function Home({ searchQuery }) {
+function Home({ searchQuery, products, categories, loadingProducts, productsError }) {
   return (
     <main>
       <HeroCarousel />
-      <ShopGrid searchQuery={searchQuery} />
+      <div id="shop">
+        <ShopGrid searchQuery={searchQuery} products={products} categories={categories} loading={loadingProducts} error={productsError} />
+      </div>
+      <div id="about">
+        <AboutPage />
+      </div>
+      <div id="contact">
+        <ContactPage />
+      </div>
     </main>
   );
 }
@@ -477,6 +527,42 @@ function ScrollToTop() {
 function App() {
   const [siteSettings, setSiteSettings] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['All']);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [productsError, setProductsError] = useState(null);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/products/');
+        if (!response.ok) throw new Error('Failed to fetch products');
+        const data = await response.json();
+        
+        const formattedProducts = data.map(p => ({
+          id: p.id,
+          title: p.title,
+          category: p.category.name,
+          categorySlug: p.category.slug,
+          description: p.description,
+          price: p.price,
+          image: p.image
+        }));
+
+        setProducts(formattedProducts);
+        
+        const uniqueCategories = ['All', ...new Set(formattedProducts.map(p => p.category))];
+        setCategories(uniqueCategories);
+      } catch (err) {
+        console.error(err);
+        setProductsError('Could not load products. Please ensure the backend is running.');
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     fetch('http://127.0.0.1:8000/api/settings/')
@@ -502,13 +588,11 @@ function App() {
         <Router>
           <div className="min-h-screen flex flex-col font-sans bg-rtm-light-bg dark:bg-gray-900 transition-colors duration-300 relative">
             <ScrollToTop />
-            <Header siteSettings={siteSettings} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+            <Header siteSettings={siteSettings} searchQuery={searchQuery} setSearchQuery={setSearchQuery} products={products} />
             <div className="flex-1">
               <Routes>
-                <Route path="/" element={<Home searchQuery={searchQuery} />} />
+                <Route path="/" element={<Home searchQuery={searchQuery} products={products} categories={categories} loadingProducts={loadingProducts} productsError={productsError} />} />
                 <Route path="/quote" element={<QuotePage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
               </Routes>
             </div>
             <Footer />

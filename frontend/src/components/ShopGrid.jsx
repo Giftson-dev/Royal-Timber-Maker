@@ -2,48 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { ShoppingBag, X, Check, Star } from 'lucide-react';
 
-export default function ShopGrid({ searchQuery }) {
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState(['All']);
+export default function ShopGrid({ searchQuery, products = [], categories = ['All'], loading = false, error = null }) {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const { addToCart } = useCart();
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/products/');
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
-        
-        // Map backend data to frontend structure
-        const formattedProducts = data.map(p => ({
-          id: p.id,
-          title: p.title,
-          category: p.category.name,
-          categorySlug: p.category.slug,
-          description: p.description,
-          price: p.price,
-          image: p.image // Django returns full or relative URL depending on setup
-        }));
-
-        setProducts(formattedProducts);
-        
-        // Extract unique categories
-        const uniqueCategories = ['All', ...new Set(formattedProducts.map(p => p.category))];
-        setCategories(uniqueCategories);
-      } catch (err) {
-        console.error(err);
-        setError('Could not load products. Please ensure the backend is running.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
 
   const filteredProducts = products.map(p => {
     const matchesCategory = activeCategory === 'All' || p.category === activeCategory;
