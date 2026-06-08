@@ -112,8 +112,9 @@ class PermissionAdmin(admin.ModelAdmin):
     search_fields = ['name', 'codename', 'content_type__app_label']
 
 from django import forms
+from django.contrib.auth.forms import UserChangeForm
 
-class UserAdminForm(forms.ModelForm):
+class UserAdminForm(UserChangeForm):
     inventory_access = forms.ModelMultipleChoiceField(
         queryset=Permission.objects.filter(content_type__app_label='inventory', content_type__model__in=['product', 'category']),
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'custom-checkboxes'}),
@@ -152,6 +153,18 @@ class UserAdmin(BaseUserAdmin):
     form = UserAdminForm
     inlines = (UserActivityInline,)
     actions = ['send_password_reset_email']
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.pk == request.user.pk:
+            return False
+        return super().has_delete_permission(request, obj)
+
+    def delete_queryset(self, request, queryset):
+        if request.user in queryset:
+            from django.contrib import messages
+            messages.error(request, "You cannot delete yourself.")
+            queryset = queryset.exclude(pk=request.user.pk)
+        super().delete_queryset(request, queryset)
     
     fieldsets = (
         ('User Credentials', {
